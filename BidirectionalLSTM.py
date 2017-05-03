@@ -21,14 +21,18 @@ class BidirectionalLSTM:
         with tf.variable_scope("ForwardLSTM"):
             state = forward_initial_state
             for sequence_step in range(length):
+                if sequence_step > 0:
+                    tf.get_variable_scope().reuse_variables()
                 # cell_out: [batch, hidden_size]
                 forward_output, state = self.forward_lstm(data[:, sequence_step, :], state)
 
         with tf.variable_scope("BackwardLSTM"):
             state = backward_initial_state
             for sequence_step in range(length):
+                if sequence_step > 0:
+                    tf.get_variable_scope().reuse_variables()
                 # cell_out: [batch, hidden_size]
-                backward_output, state = self.backward_lstm(data[:, length - sequence_step, :], state)
+                backward_output, state = self.backward_lstm(data[:, length - sequence_step - 1, :], state)
 
         tf.summary.histogram('forward_lstm_output', forward_output)
         tf.summary.histogram('backward_lstm_output', backward_output)

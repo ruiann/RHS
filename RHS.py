@@ -7,7 +7,7 @@ from BidirectionalLSTM import BidirectionalLSTM
 
 class RHS:
 
-    def __init__(self, lstm_size=800, class_num=400):
+    def __init__(self, lstm_size=800, class_num=10):
         self.bidirectional_LSTM = BidirectionalLSTM('BidirectionalLSTM', lstm_size)
         self.logistic_regression = LogisticRegression('LogisticRegression', lstm_size, class_num)
 
