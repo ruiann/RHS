@@ -52,17 +52,18 @@ def train():
             loop = int(data.sample_num() / batch_size)
             for step in xrange(loop):
                 start_time = time.time()
-                print('epoch: %d step: %d' % period, step)
+                print('epoch: %d step: %d' % (period, step))
                 x_feed, labels_feed = data.feed_dict(batch_size)
                 summary_str, loss = sess.run([summary, train_op], feed_dict={x: x_feed, labels: labels_feed})
                 summary_writer.add_summary(summary_str, step)
 
-                if step % 20 == 0:
+                global_step = period * loop + step
+                if global_step % 20 == 0:
                     checkpoint_file = os.path.join(model_dir, 'model.latest')
                     saver.save(sess, checkpoint_file)
 
-                if step % 100 == 0:
-                    summary_writer.add_run_metadata(run_metadata, 'step%03d' % step)
+                if global_step % 100 == 0:
+                    summary_writer.add_run_metadata(run_metadata, 'step%03d' % global_step)
 
                 print("step cost: %ds" % (time.time() - start_time))
                 print('Memory usage: {0}'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024))
