@@ -51,13 +51,13 @@ def train():
             data.init_data()
             loop = int(data.sample_num() / batch_size)
             for step in xrange(loop):
+                global_step = period * loop + step
                 start_time = time.time()
                 print('epoch: %d step: %d' % (period, step))
                 x_feed, labels_feed = data.feed_dict(batch_size)
                 summary_str, loss = sess.run([summary, train_op], feed_dict={x: x_feed, labels: labels_feed})
-                summary_writer.add_summary(summary_str, step)
+                summary_writer.add_summary(summary_str, global_step)
 
-                global_step = period * loop + step
                 if global_step % 20 == 0:
                     checkpoint_file = os.path.join(model_dir, 'model.latest')
                     saver.save(sess, checkpoint_file)
