@@ -1,14 +1,14 @@
 import random
 import os
 
-
-train_dir = ['./data/chinese1', './data/chinese2', './data/english1', './data/english2']
-test_dir = ['./data/same chinese', './data/same english']
+base_path = '/datastore2/anrui/rhs'
+train_dir = ['chinese1', 'chinese2', 'english1', 'english2']
+test_dir = ['same chinese', 'same english']
 useless_line = (0, 0, 0, 0, -1)
 
 
 def get_writter_list():
-    filenames = os.listdir(train_dir[0])
+    filenames = os.listdir(base_path + '/' + train_dir[0])
     return filenames
 
 
@@ -49,7 +49,7 @@ def get_samples():
         signatures = []
         no = str(w + 1)
         for s in xrange(len(train_dir)):
-            path = '{}/{}'.format(train_dir[s], writters[w])
+            path = '{}/{}/{}'.format(base_path, train_dir[s], writters[w])
             signature = read_file(path)
             if signature:
                 signatures.append(signature)
