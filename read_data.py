@@ -1,10 +1,25 @@
 import random
+import os
+import pdb
 
-# data definition of sigComp2011
+
+train_dir = ['./data/chinese1', './data/chinese2', './data/english1', './data/english2']
+test_dir = ['./data/same chinese', './data/same english']
+useless_line = (0, 0, 0, 0, -1)
+
+
+def get_writter_list():
+    filenames = os.listdir(train_dir[0])
+    return filenames
+
+
+# data definition of BIT Handwriting
 def read_file(path):
     try:
         file = open(path, 'r')
         lines = file.readlines()
+        for line_index in useless_line:
+            del lines[line_index]
         s = []
         base_x = None
         base_y = None
@@ -12,47 +27,43 @@ def read_file(path):
         for line in lines:
             line = line.replace('\r', '')
             line = line.replace('\n', '')
-            data = line.split(' ')
-
+            data = line.split()
             if base_x:
-                s.append([int(data[0]) - base_x, int(data[1]) - base_y, 1 if int(data[2]) * base_p > 0 else 0])
+                s.append([int(data[4]) - base_x, int(data[5]) - base_y, 1 if int(data[1]) * base_p > 0 else 0])
 
-            base_x = int(data[0])
-            base_y = int(data[1])
-            base_p = int(data[2])
+            base_x = int(data[4])
+            base_y = int(data[5])
+            base_p = int(data[1])
 
-    except:
+    except Exception, e:
+        print repr(e)
         return None
 
     return s
 
-# genuine sample for sigComp2011
 
-writer_num = 10
-sample = 24
-dir = './TrainingSet/Online Genuine/'
-
+# sample for BIT Handwriting
 def get_samples():
+    writters = get_writter_list()
     samples = []
-    for w in xrange(writer_num):
+    for w in xrange(len(writters)):
         signatures = []
         no = str(w + 1)
-        prefix = '00' + no if len(no) == 1 else '0' + no
-        for s in xrange(sample):
-            path = '{}{}_{}.HWR'.format(dir, prefix, s + 1)
+        for s in xrange(len(train_dir)):
+            path = '{}/{}'.format(train_dir[s], writters[w])
             signature = read_file(path)
             if signature:
                 signatures.append(signature)
         samples.append(signatures)
 
-    return samples
+    return samples, writters
 
 
 # get rhs data
-def get_rhs_segments(segment_per_writer=50, segment_length=100):
-    samples = get_samples()
+def get_rhs_segments(segment_per_writer=1000, segment_length=100):
+    samples, writters = get_samples()
     rhs = []
-    for w in xrange(writer_num):
+    for w in xrange(len(writters)):
         writer_samples = samples[w]
         count = len(writer_samples)
         for i in xrange(segment_per_writer):
@@ -64,8 +75,9 @@ def get_rhs_segments(segment_per_writer=50, segment_length=100):
 
     return rhs
 
+
 class Data:
-    def __init__(self, segment_per_writer, segment_length):
+    def __init__(self, segment_per_writer=1000, segment_length=100):
         self.rhs_sample = get_rhs_segments(segment_per_writer, segment_length)
 
     def feed_dict(self, batch_size):

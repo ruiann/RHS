@@ -18,7 +18,7 @@ class RHS:
 
     # compute loss
     def loss(self, logits, labels):
-        return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits, name='RHS'))
+        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=logits, name='RHS'))
 
     # return training operation, data should be a PlaceHolder
     def train(self, rate, data, batch_size, length, labels):
