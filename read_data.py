@@ -65,12 +65,12 @@ def get_rhs_segments(segment_per_writer=1000, segment_length=100):
     for w in xrange(len(writters)):
         writer_samples = samples[w]
         count = len(writer_samples)
-        for i in xrange(segment_per_writer):
-            sample_index = random.randint(0, count - 1)
-            sample = writer_samples[sample_index]
-            sample_length = len(sample)
-            segment_start = random.randint(0, sample_length - segment_length)
-            rhs.append({'segment': sample[segment_start: segment_start + segment_length], 'label': w})
+        for sample_index in xrange(count):
+            for i in xrange(segment_per_writer):
+                sample = writer_samples[sample_index]
+                sample_length = len(sample)
+                segment_start = random.randint(0, sample_length - segment_length)
+                rhs.append({'segment': sample[segment_start: segment_start + segment_length], 'label': w})
 
     return rhs, writters
 

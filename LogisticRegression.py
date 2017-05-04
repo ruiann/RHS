@@ -18,4 +18,5 @@ class LogisticRegression:
     def run(self, x):
         out = tf.nn.bias_add(tf.matmul(x, self.W), self.b)
         out = tf.nn.relu(out)
+        tf.summary.histogram('regression_result', out)
         return out
