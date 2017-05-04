@@ -79,6 +79,7 @@ class Data:
     def __init__(self, segment_per_sample=1000, segment_length=100):
         self.segment_per_sample = segment_per_sample
         self.segment_length = segment_length
+        self.writers = get_writter_list()
 
     def init_data(self):
         self.rhs_sample = get_rhs_segments(train_dir, self.segment_per_sample, self.segment_length)
@@ -96,11 +97,32 @@ class Data:
         return segments, labels
 
     def class_num(self):
-        return len(get_writter_list())
+        return len(self.writers)
 
     def sample_num(self):
         return len(self.rhs_sample)
 
+    def init_test_data(self):
+        test_rhs_sample = get_rhs_segments(test_dir, self.segment_per_sample, self.segment_length)
+        result = [[] * self.class_num()]
+        for sample in test_rhs_sample:
+            label = sample['label']
+            result[label].append(sample['segment'])
+
+        self.test_rhs_sample = result
+
+    def get_segments_for_each_writer(self, count=2):
+        result = []
+        for i in xrange(self.class_num()):
+            writer_result = []
+            for j in xrange(count):
+                writer_sample = self.test_rhs_sample[i]
+                segments_count = len(writer_sample)
+                segment_index = random.randint(0, segments_count - 1)
+                writer_result.append(writer_sample[segment_index])
+            result.append(writer_result)
+
+        return result
 
 if __name__ == '__main__':
     data = Data()
