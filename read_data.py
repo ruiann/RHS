@@ -72,7 +72,7 @@ def get_rhs_segments(dir_list, segment_per_sample=1000, segment_length=100):
                 segment_start = random.randint(0, sample_length - segment_length)
                 rhs.append({'segment': sample[segment_start: segment_start + segment_length], 'label': w})
 
-    return rhs, writters
+    return rhs
 
 
 class Data:
@@ -81,7 +81,7 @@ class Data:
         self.segment_length = segment_length
 
     def init_data(self):
-        self.rhs_sample, self.writters = get_rhs_segments(train_dir, self.segment_per_sample, self.segment_length)
+        self.rhs_sample = get_rhs_segments(train_dir, self.segment_per_sample, self.segment_length)
 
     def feed_dict(self, batch_size):
         segments = []
@@ -96,7 +96,7 @@ class Data:
         return segments, labels
 
     def class_num(self):
-        return len(self.writters)
+        return len(get_writter_list())
 
     def sample_num(self):
         return len(self.rhs_sample)
