@@ -104,7 +104,7 @@ class Data:
 
     def init_test_data(self):
         test_rhs_sample = get_rhs_segments(test_dir, self.segment_per_sample, self.segment_length)
-        result = [[] * self.class_num()]
+        result = [[]] * self.class_num()
         for sample in test_rhs_sample:
             label = sample['label']
             result[label].append(sample['segment'])

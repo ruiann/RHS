@@ -14,10 +14,13 @@ class RHS:
     # do classification
     def run(self, data, batch_size, length):
         lstm_code = self.lstm(data, batch_size, length)
-        return self.logistic_regression.run(lstm_code)
+        return self.regression(lstm_code)
 
     def lstm(self, data, batch_size, length):
         return self.bidirectional_LSTM.run(data, batch_size, length)
+
+    def regression(self, lstm_code):
+        return self.logistic_regression.run(lstm_code)
 
     # compute loss
     def loss(self, logits, labels):

@@ -73,8 +73,9 @@ def train():
 
 def test():
     data.init_test_data()
-    x = tf.placeholder(tf.float32, shape=(batch_size, segment_length, channel))
-    regression = tf.reduce_sum(rhs.run(x, test_count, segment_length))
+    x = tf.placeholder(tf.float32, shape=(test_count, segment_length, channel))
+    regression = rhs.run(x, test_count, segment_length)
+    classification = tf.reduce_mean(tf.nn.softmax(regression), 0)
 
     sess = tf.Session()
 
@@ -92,8 +93,8 @@ def test():
 
         for w in xrange(len(sample)):
             writer_sample = sample[w]
-            classification = sess.run(regression, feed_dict={x: writer_sample})
-            print (classification)
+            probability = sess.run(classification, feed_dict={x: writer_sample})
+            print probability
 
         print("test cost: %ds" % (time.time() - start_time))
 
