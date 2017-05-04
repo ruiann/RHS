@@ -11,8 +11,6 @@ batch_size = 128
 segment_per_sample = 1000
 segment_length = 100
 channel = 3
-test_count = 30
-
 
 log_dir = './log'
 model_dir = './model'
@@ -69,34 +67,6 @@ def train():
                 print('Memory usage: {0}'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024))
 
         summary_writer.close()
-
-
-def test():
-    data.init_test_data()
-    x = tf.placeholder(tf.float32, shape=(test_count, segment_length, channel))
-    regression = rhs.run(x, test_count, segment_length)
-    classification = tf.reduce_mean(tf.nn.softmax(regression), 0)
-
-    sess = tf.Session()
-
-    with sess.as_default():
-        sess.run(tf.global_variables_initializer())
-
-        saver = tf.train.Saver()
-        checkpoint = tf.train.get_checkpoint_state(model_dir)
-
-        if checkpoint:
-            saver.restore(sess, checkpoint.model_checkpoint_path)
-
-        start_time = time.time()
-        sample = data.get_segments_for_each_writer(test_count)
-
-        for w in xrange(len(sample)):
-            writer_sample = sample[w]
-            probability = sess.run(classification, feed_dict={x: writer_sample})
-            print probability
-
-        print("test cost: %ds" % (time.time() - start_time))
 
 
 if __name__ == '__main__':
