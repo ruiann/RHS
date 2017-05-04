@@ -1,6 +1,5 @@
 import random
 import os
-import pdb
 
 
 train_dir = ['./data/chinese1', './data/chinese2', './data/english1', './data/english2']
@@ -73,12 +72,12 @@ def get_rhs_segments(segment_per_writer=1000, segment_length=100):
             segment_start = random.randint(0, sample_length - segment_length)
             rhs.append({'segment': sample[segment_start: segment_start + segment_length], 'label': w})
 
-    return rhs
+    return rhs, writters
 
 
 class Data:
     def __init__(self, segment_per_writer=1000, segment_length=100):
-        self.rhs_sample = get_rhs_segments(segment_per_writer, segment_length)
+        self.rhs_sample, self.writters = get_rhs_segments(segment_per_writer, segment_length)
 
     def feed_dict(self, batch_size):
         segments = []
@@ -91,6 +90,12 @@ class Data:
             del self.rhs_sample[segment_index]
 
         return segments, labels
+
+    def class_num(self):
+        return len(self.writters)
+
+    def sample_num(self):
+        return len(self.rhs_sample)
 
 
 if __name__ == '__main__':

@@ -6,32 +6,30 @@ from RHS import RHS
 from read_data import Data
 
 rate = 0.00001
-epoch_times = 10
-loop = 1000
 
-
-batch_size = 32
-segment_per_writer = 50
+batch_size = 108
+segment_per_writer = 1000
 segment_length = 100
 channel = 3
 
 
-dataset = ['../lfw/train']
 log_dir = './log'
 model_dir = './model'
 
-rhs = RHS(lstm_size=800, class_num=10)
-data = Data(segment_per_writer, segment_length)
-
 
 def train():
+
+    data = Data(segment_per_writer, segment_length)
+    rhs = RHS(lstm_size=800, class_num=data.class_num())
+    loop = int(data.sample_num() / batch_size)
 
     x = tf.placeholder(tf.float32, shape=(batch_size, segment_length, channel))
     labels = tf.placeholder(tf.int32, shape=(batch_size))
     train_op = rhs.train(rate, x, batch_size, segment_length, labels)
 
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.7)
-    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+    # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.7)
+    # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+    sess = tf.Session()
 
     with sess.as_default():
 
