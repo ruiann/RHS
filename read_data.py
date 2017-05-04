@@ -42,14 +42,14 @@ def read_file(path):
 
 
 # sample for BIT Handwriting
-def get_samples():
+def get_samples(dir_list):
     writters = get_writter_list()
     samples = []
     for w in xrange(len(writters)):
         signatures = []
         no = str(w + 1)
-        for s in xrange(len(train_dir)):
-            path = '{}/{}/{}'.format(base_path, train_dir[s], writters[w])
+        for s in xrange(len(dir_list)):
+            path = '{}/{}/{}'.format(base_path, dir_list[s], writters[w])
             signature = read_file(path)
             if signature:
                 signatures.append(signature)
@@ -59,14 +59,14 @@ def get_samples():
 
 
 # get rhs data
-def get_rhs_segments(segment_per_writer=1000, segment_length=100):
-    samples, writters = get_samples()
+def get_rhs_segments(dir_list, segment_per_sample=1000, segment_length=100):
+    samples, writters = get_samples(dir_list)
     rhs = []
     for w in xrange(len(writters)):
         writer_samples = samples[w]
         count = len(writer_samples)
         for sample_index in xrange(count):
-            for i in xrange(segment_per_writer):
+            for i in xrange(segment_per_sample):
                 sample = writer_samples[sample_index]
                 sample_length = len(sample)
                 segment_start = random.randint(0, sample_length - segment_length)
@@ -76,8 +76,12 @@ def get_rhs_segments(segment_per_writer=1000, segment_length=100):
 
 
 class Data:
-    def __init__(self, segment_per_writer=1000, segment_length=100):
-        self.rhs_sample, self.writters = get_rhs_segments(segment_per_writer, segment_length)
+    def __init__(self, segment_per_sample=1000, segment_length=100):
+        self.segment_per_sample = segment_per_sample
+        self.segment_length = segment_length
+
+    def init_data(self):
+        self.rhs_sample, self.writters = get_rhs_segments(train_dir, self.segment_per_sample, self.segment_length)
 
     def feed_dict(self, batch_size):
         segments = []

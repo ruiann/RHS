@@ -6,9 +6,9 @@ from RHS import RHS
 from read_data import Data
 
 rate = 0.00001
-
-batch_size = 108
-segment_per_writer = 1000
+epoch = 10
+batch_size = 128
+segment_per_sample = 1000
 segment_length = 100
 channel = 3
 
@@ -19,9 +19,8 @@ model_dir = './model'
 
 def train():
 
-    data = Data(segment_per_writer, segment_length)
+    data = Data(segment_per_sample, segment_length)
     rhs = RHS(lstm_size=800, class_num=data.class_num())
-    loop = int(data.sample_num() / batch_size)
 
     x = tf.placeholder(tf.float32, shape=(batch_size, segment_length, channel))
     labels = tf.placeholder(tf.int32, shape=(batch_size))
@@ -48,22 +47,25 @@ def train():
 
         print('Memory usage: {0}'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024))
 
-        for step in xrange(loop):
-            start_time = time.time()
-            print('step: %d' % step)
-            x_feed, labels_feed = data.feed_dict(batch_size)
-            summary_str, loss = sess.run([summary, train_op], feed_dict={x: x_feed, labels: labels_feed})
-            summary_writer.add_summary(summary_str, step)
+        for period in xrange(epoch):
+            data.init_data()
+            loop = int(data.sample_num() / batch_size)
+            for step in xrange(loop):
+                start_time = time.time()
+                print('epoch: %d step: %d' % period, step)
+                x_feed, labels_feed = data.feed_dict(batch_size)
+                summary_str, loss = sess.run([summary, train_op], feed_dict={x: x_feed, labels: labels_feed})
+                summary_writer.add_summary(summary_str, step)
 
-            if step % 20 == 0:
-                checkpoint_file = os.path.join(model_dir, 'model.latest')
-                saver.save(sess, checkpoint_file)
+                if step % 20 == 0:
+                    checkpoint_file = os.path.join(model_dir, 'model.latest')
+                    saver.save(sess, checkpoint_file)
 
-            if step % 100 == 0:
-                summary_writer.add_run_metadata(run_metadata, 'step%03d' % step)
+                if step % 100 == 0:
+                    summary_writer.add_run_metadata(run_metadata, 'step%03d' % step)
 
-            print("step cost: %ds" % (time.time() - start_time))
-            print('Memory usage: {0}'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024))
+                print("step cost: %ds" % (time.time() - start_time))
+                print('Memory usage: {0}'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024))
 
         summary_writer.close()
 
