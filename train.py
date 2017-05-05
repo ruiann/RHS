@@ -51,7 +51,7 @@ def train():
             for step in xrange(loop):
                 global_step = period * loop + step
                 start_time = time.time()
-                print('epoch: %d step: %d' % (period, step))
+                print('epoch: {0} step: {1}'.format(period, step))
                 x_feed, labels_feed = data.feed_dict(batch_size)
                 summary_str, loss = sess.run([summary, train_op], feed_dict={x: x_feed, labels: labels_feed})
                 summary_writer.add_summary(summary_str, global_step)
@@ -63,7 +63,7 @@ def train():
                 if global_step % 100 == 0:
                     summary_writer.add_run_metadata(run_metadata, 'step%03d' % global_step)
 
-                print("step cost: %ds" % (time.time() - start_time))
+                print("step cost: {0}".format(time.time() - start_time))
                 print('Memory usage: {0}'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024))
 
         summary_writer.close()

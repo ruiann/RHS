@@ -19,6 +19,7 @@ def test():
     x = tf.placeholder(tf.float32, shape=(test_count, segment_length, channel))
     regression = rhs.run(x, test_count, segment_length)
     classification = tf.reduce_mean(tf.nn.softmax(regression), 0)
+    index = tf.argmax(classification, dimension=0)
 
     sess = tf.Session()
 
@@ -36,10 +37,10 @@ def test():
 
         for w in xrange(len(sample)):
             writer_sample = sample[w]
-            probability = sess.run(classification, feed_dict={x: writer_sample})
-            print probability
+            probability, label = sess.run([classification, index], feed_dict={x: writer_sample})
+            print('label: {0} probability: {1}'.format(label, probability[label]))
 
-        print("test cost: %ds" % (time.time() - start_time))
+        print("test cost: {0}".format(time.time() - start_time))
 
 
 if __name__ == '__main__':
