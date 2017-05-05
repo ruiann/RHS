@@ -1,13 +1,13 @@
 import random
 import os
 
-base_path = '/datastore2/anrui/rhs'
+base_path = './data'
 train_dir = ['chinese1', 'chinese2', 'english1', 'english2']
 test_dir = ['same chinese', 'same english']
 useless_line = (0, 0, 0, 0, -1)
 
 
-def get_writter_list():
+def get_writer_list():
     filenames = os.listdir(base_path + '/' + train_dir[0])
     return filenames
 
@@ -43,26 +43,26 @@ def read_file(path):
 
 # sample for BIT Handwriting
 def get_samples(dir_list):
-    writters = get_writter_list()
+    writers = get_writer_list()
     samples = []
-    for w in xrange(len(writters)):
+    for w in xrange(len(writers)):
         signatures = []
         no = str(w + 1)
         for s in xrange(len(dir_list)):
-            path = '{}/{}/{}'.format(base_path, dir_list[s], writters[w])
+            path = '{}/{}/{}'.format(base_path, dir_list[s], writers[w])
             signature = read_file(path)
             if signature:
                 signatures.append(signature)
         samples.append(signatures)
 
-    return samples, writters
+    return samples, writers
 
 
 # get rhs data
 def get_rhs_segments(dir_list, segment_per_sample=1000, segment_length=100):
-    samples, writters = get_samples(dir_list)
+    samples, writers = get_samples(dir_list)
     rhs = []
-    for w in xrange(len(writters)):
+    for w in xrange(len(writers)):
         writer_samples = samples[w]
         count = len(writer_samples)
         for sample_index in xrange(count):
@@ -79,7 +79,7 @@ class Data:
     def __init__(self, segment_per_sample=1000, segment_length=100):
         self.segment_per_sample = segment_per_sample
         self.segment_length = segment_length
-        self.writers = get_writter_list()
+        self.writers = get_writer_list()
 
     def init_data(self):
         self.rhs_sample = get_rhs_segments(train_dir, self.segment_per_sample, self.segment_length)
