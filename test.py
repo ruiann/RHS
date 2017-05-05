@@ -34,13 +34,16 @@ def test():
 
         start_time = time.time()
         sample = data.get_segments_for_each_writer(test_count)
+        label_list = []
 
         for w in xrange(len(sample)):
             writer_sample = sample[w]
             probability, label = sess.run([classification, index], feed_dict={x: writer_sample})
             print('label: {0} probability: {1}'.format(label, probability[label]))
+            label_list.append(label)
 
         print("test cost: {0}".format(time.time() - start_time))
+        print(label_list)
 
 
 if __name__ == '__main__':

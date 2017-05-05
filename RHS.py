@@ -29,6 +29,9 @@ class RHS:
     # return training operation, data should be a PlaceHolder
     def train(self, rate, data, batch_size, length, labels):
         logits = self.run(data, batch_size, length)
+        classification = tf.to_int32(tf.arg_max(tf.nn.softmax(logits), dimension=1))
+        differ = labels - classification
+        tf.summary.histogram('classification difference', differ)
         loss = self.loss(logits, labels)
         tf.summary.scalar('classifier loss', loss)
         return tf.train.AdamOptimizer(learning_rate=rate).minimize(loss)
