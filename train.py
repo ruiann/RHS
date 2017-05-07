@@ -6,7 +6,7 @@ from RHS import RHS
 from read_data import Data
 
 rate = 0.00001
-epoch = 10
+epoch = 50
 batch_size = 128
 segment_per_sample = 1000
 segment_length = 100
