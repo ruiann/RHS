@@ -16,7 +16,7 @@ rhs = RHS(lstm_size=800, class_num=data.class_num())
 
 def test():
     data.init_test_data()
-    x = tf.placeholder(tf.float32, shape=(test_count, segment_length, channel))
+    x = tf.placeholder(tf.float32, shape=(test_count, None, channel))
     regression = rhs.run(x, test_count)
     classification = tf.reduce_mean(tf.nn.softmax(regression), 0)
     index = tf.argmax(classification, dimension=0)

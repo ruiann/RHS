@@ -19,13 +19,10 @@ rhs = RHS(lstm_size=800, class_num=data.class_num())
 
 def test():
     data.init_test_data()
-    x = tf.placeholder(tf.float32, shape=(test_count, segment_length, channel))
+    x = tf.placeholder(tf.float32, shape=(test_count, None, channel))
     lstm_code = tf.reduce_sum(rhs.lstm(x, test_count), 0)
-    tf.summary.histogram('lstm_encode', lstm_code)
 
     sess = tf.Session()
-    summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
-    summary = tf.summary.merge_all()
 
     with sess.as_default():
         sess.run(tf.global_variables_initializer())
@@ -43,8 +40,7 @@ def test():
         for period in xrange(test_period):
             sample = data.get_segments_for_each_writer(test_count)
             writer_sample = sample[sample_class]
-            lstm, summary_str = sess.run([lstm_code, summary], feed_dict={x: writer_sample})
-            summary_writer.add_summary(summary_str, period)
+            lstm = sess.run(lstm_code, feed_dict={x: writer_sample})
             if period > 0:
                 differ = lstm - base_lstm
                 dis = tf.reduce_mean(tf.square(differ))
@@ -59,8 +55,7 @@ def test():
         # different origin differ
         for period in xrange(sample_class):
             writer_sample = sample[period]
-            lstm, summary_str = sess.run([lstm_code, summary], feed_dict={x: writer_sample})
-            summary_writer.add_summary(summary_str, period)
+            lstm = sess.run(lstm_code, feed_dict={x: writer_sample})
             if period > 0:
                 differ = lstm - base_lstm
                 dis = tf.reduce_mean(tf.square(differ))
