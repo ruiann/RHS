@@ -55,11 +55,9 @@ def train():
                 summary_str, loss = sess.run([summary, train_op], feed_dict={x: x_feed, labels: labels_feed})
                 summary_writer.add_summary(summary_str, global_step)
 
-                if global_step % 20 == 0 and global_step != 0:
+                if global_step % 100 == 0 and global_step != 0:
                     checkpoint_file = os.path.join(model_dir, 'model.latest')
                     saver.save(sess, checkpoint_file)
-
-                if global_step % 100 == 0:
                     summary_writer.add_run_metadata(run_metadata, 'step%03d' % global_step)
 
                 print("step cost: {0}".format(time.time() - start_time))
