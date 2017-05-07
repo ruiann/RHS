@@ -1,5 +1,6 @@
 import tensorflow as tf
 import time
+import random
 from RHS import RHS
 from read_data import Data
 
@@ -36,11 +37,27 @@ def test():
             saver.restore(sess, checkpoint.model_checkpoint_path)
 
         start_time = time.time()
+        sample_class = random.randint(0, data.class_num() - 1)
 
-        base_lstm = 0;
-
+        # sample origin differ
         for period in xrange(test_period):
             sample = data.get_segments_for_each_writer(test_count)
+            writer_sample = sample[sample_class]
+            lstm, summary_str = sess.run([lstm_code, summary], feed_dict={x: writer_sample})
+            summary_writer.add_summary(summary_str, period)
+            if period > 0:
+                differ = lstm - base_lstm
+                dis = tf.reduce_mean(tf.square(differ))
+                dis = sess.run(dis)
+                print(dis)
+            base_lstm = lstm
+
+        print("time cost: {0}".format(time.time() - start_time))
+        start_time = time.time()
+        sample = data.get_segments_for_each_writer(test_count)
+
+        # different origin differ
+        for period in xrange(sample_class):
             writer_sample = sample[period]
             lstm, summary_str = sess.run([lstm_code, summary], feed_dict={x: writer_sample})
             summary_writer.add_summary(summary_str, period)
