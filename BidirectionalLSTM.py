@@ -15,8 +15,9 @@ class BidirectionalLSTM:
     def clear(self, batch_size):
         return self.forward_lstm.zero_state(batch_size, self.data_type), self.backward_lstm.zero_state(batch_size, self.data_type)
 
-    def run(self, data, batch_size, length):
+    def run(self, data, batch_size):
         forward_initial_state, backward_initial_state = self.clear(batch_size)
+        length = data.get_shape()[1]
 
         with tf.variable_scope("ForwardLSTM"):
             state = forward_initial_state

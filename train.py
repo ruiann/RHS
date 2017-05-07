@@ -4,6 +4,7 @@ import time
 import resource
 from RHS import RHS
 from read_data import Data
+import pdb
 
 rate = 0.00001
 epoch = 10
@@ -23,7 +24,7 @@ def train():
 
     x = tf.placeholder(tf.float32, shape=(batch_size, segment_length, channel))
     labels = tf.placeholder(tf.int32, shape=(batch_size))
-    train_op = rhs.train(rate, x, batch_size, segment_length, labels)
+    train_op = rhs.train(rate, x, batch_size, labels)
 
     # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.7)
     # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
@@ -35,7 +36,7 @@ def train():
 
         saver = tf.train.Saver()
         checkpoint = tf.train.get_checkpoint_state(model_dir)
-
+        pdb.set_trace()
         if checkpoint:
             saver.restore(sess, checkpoint.model_checkpoint_path)
 
@@ -56,7 +57,7 @@ def train():
                 summary_str, loss = sess.run([summary, train_op], feed_dict={x: x_feed, labels: labels_feed})
                 summary_writer.add_summary(summary_str, global_step)
 
-                if global_step % 20 == 0:
+                if global_step % 20 == 0 and global_step != 0:
                     checkpoint_file = os.path.join(model_dir, 'model.latest')
                     saver.save(sess, checkpoint_file)
 

@@ -20,7 +20,7 @@ rhs = RHS(lstm_size=800, class_num=data.class_num())
 def test():
     data.init_test_data()
     x = tf.placeholder(tf.float32, shape=(test_count, segment_length, channel))
-    lstm_code = tf.reduce_sum(rhs.lstm(x, test_count, segment_length), 0)
+    lstm_code = tf.reduce_sum(rhs.lstm(x, test_count), 0)
     tf.summary.histogram('lstm_encode', lstm_code)
 
     sess = tf.Session()
