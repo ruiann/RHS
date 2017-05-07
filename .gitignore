@@ -1,5 +1,6 @@
 *.pyc
 data/
+SVC2004/
 log/
 model/
 .idea
