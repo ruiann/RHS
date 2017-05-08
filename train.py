@@ -30,17 +30,14 @@ def train():
     sess = tf.Session()
     saver = tf.train.Saver()
     checkpoint = tf.train.get_checkpoint_state(model_dir)
+    summary = tf.summary.merge_all()
+    run_metadata = tf.RunMetadata()
 
     with sess.as_default():
-
-        sess.run(tf.global_variables_initializer())
-
         if checkpoint:
             saver.restore(sess, checkpoint.model_checkpoint_path)
-
         summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
-        summary = tf.summary.merge_all()
-        run_metadata = tf.RunMetadata()
+        sess.run(tf.global_variables_initializer())
 
         print('Memory usage: {0}'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024))
 

@@ -25,7 +25,7 @@ class BidirectionalLSTM:
 
         with tf.variable_scope("BackwardLSTM"):
             state = backward_initial_state
-            backward_output, state = tf.nn.dynamic_rnn(self.forward_lstm, data, initial_state=state)
+            backward_output, state = tf.nn.dynamic_rnn(self.backward_lstm, data, initial_state=state)
             backward_output = backward_output[:, -1, :]
 
         tf.summary.histogram('forward_lstm_output', forward_output)
