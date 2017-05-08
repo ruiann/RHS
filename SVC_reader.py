@@ -54,6 +54,17 @@ def get_genuine_data():
         data.append(writer_sample)
     return data
 
+
+def get_fake_data():
+    data = []
+    for writer in get_writer_list():
+        writer_sample = []
+        for index in fake_data_range():
+            writer_sample.append(read_file('{}/U{}S{}.TXT'.format(base_path, writer, index)))
+        data.append(writer_sample)
+    return data
+
+
 if __name__ == '__main__':
     # data = read_file('{}/U{}S{}.TXT'.format(base_path, 1, 1))
     data = get_genuine_data()
