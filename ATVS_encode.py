@@ -26,7 +26,7 @@ def test():
         # same writer genuine test
         print('same writer genuine test')
         start_time = time.time()
-        for writer in xrange(len(genuine_data)):
+        for writer in xrange(10):
             writer_sample = genuine_data[writer]
             dis = []
             for index in xrange(len(writer_sample)):
@@ -46,14 +46,14 @@ def test():
         print('different writer genuine test')
         start_time = time.time()
         for index in xrange(len(genuine_data[0])):
-            for writer in xrange(len(genuine_data)):
+            dis = []
+            for writer in xrange(10):
                 writer_sample = genuine_data[writer]
-                dis = []
                 sample = writer_sample[index]
                 lstm = sess.run(lstm_code, feed_dict={x: [sample]})
                 if writer > 0:
                     differ = lstm - base_lstm
-                    distance = tf.reduce_sum(tf.square(differ))
+                    distance = tf.reduce_mean(tf.square(differ))
                     dis.append(sess.run(distance))
                 base_lstm = lstm
 
