@@ -1,17 +1,13 @@
-base_path = './SVC2004/Task1'
-useless_line = [0]
+base_path = './ATVS-SSig_DB/DS1_Modification_TimeFunctions'
+useless_line = [-1]
 
 
 def get_writer_list():
-    return range(1, 41)
+    return range(1001, 1351)
 
 
 def genuine_data_range():
-    return range(1, 21)
-
-
-def fake_data_range():
-    return range(21, 41)
+    return range(1, 26)
 
 
 # data definition of BIT Handwriting
@@ -48,23 +44,12 @@ def get_genuine_data():
     for writer in get_writer_list():
         writer_sample = []
         for index in genuine_data_range():
-            writer_sample.append(read_file('{}/U{}S{}.TXT'.format(base_path, writer, index)))
-        data.append(writer_sample)
-    return data
-
-
-def get_fake_data():
-    data = []
-    for writer in get_writer_list():
-        writer_sample = []
-        for index in fake_data_range():
-            writer_sample.append(read_file('{}/U{}S{}.TXT'.format(base_path, writer, index)))
+            writer_sample.append(read_file('{0}/usuario{1}/u{1}_sg{2}.TXT'.format(base_path, writer, index)))
         data.append(writer_sample)
     return data
 
 
 if __name__ == '__main__':
-    # data = read_file('{}/U{}S{}.TXT'.format(base_path, 1, 1))
     data = get_genuine_data()
     print(len(data))
     print(len(data[0]))
