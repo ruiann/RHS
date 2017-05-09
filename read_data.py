@@ -22,17 +22,19 @@ def read_file(path):
         s = []
         base_x = None
         base_y = None
-        base_p = None
+        base_t = None
         for line in lines:
             line = line.replace('\r', '')
             line = line.replace('\n', '')
             data = line.split()
-            if base_x:
-                s.append([int(data[4]) - base_x, int(data[5]) - base_y, 1 if int(data[1]) * base_p > 0 else 0])
+            # real stroke only
+            if data[1] != 0:
+                if base_x:
+                    s.append([int(data[4]) - base_x, int(data[5]) - base_y, int(data[0]) - base_t])
 
             base_x = int(data[4])
             base_y = int(data[5])
-            base_p = int(data[1])
+            base_t = int(data[0])
 
     except Exception, e:
         print repr(e)
@@ -126,6 +128,7 @@ class Data:
 
 if __name__ == '__main__':
     data = Data()
+    data.init_data()
     samples, labels = data.feed_dict(10)
     print samples
     print labels
