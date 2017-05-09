@@ -1,7 +1,13 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import tensorflow as tf
 import time
 from RHS import RHS
 from ATVS_reader import *
+import matplotlib.pyplot as plt
+import random
 
 channel = 3
 
@@ -23,43 +29,24 @@ def test():
         sess.run(tf.global_variables_initializer())
         saver.restore(sess, checkpoint.model_checkpoint_path)
 
-        # same writer genuine test
-        print('same writer genuine test')
-        start_time = time.time()
-        for writer in xrange(10):
-            writer_sample = genuine_data[writer]
-            dis = []
-            for index in xrange(len(writer_sample)):
-                sample = writer_sample[index]
-                lstm = sess.run(lstm_code, feed_dict={x: [sample]})
-                if index > 0:
-                    differ = lstm - base_lstm
-                    distance = tf.reduce_mean(tf.square(differ))
-                    dis.append(sess.run(distance))
-                base_lstm = lstm
-
-            min, max, mean = sess.run([tf.reduce_min(dis), tf.reduce_max(dis), tf.reduce_mean(dis)])
-            print('min: {}, max: {}, mean: {}'.format(min, max, mean))
-        print("time cost: {0}".format(time.time() - start_time))
-
         # different writer genuine test
         print('different writer genuine test')
         start_time = time.time()
-        for index in xrange(len(genuine_data[0])):
-            dis = []
-            for writer in xrange(10):
-                writer_sample = genuine_data[writer]
-                sample = writer_sample[index]
-                lstm = sess.run(lstm_code, feed_dict={x: [sample]})
-                if writer > 0:
-                    differ = lstm - base_lstm
-                    distance = tf.reduce_mean(tf.square(differ))
-                    dis.append(sess.run(distance))
-                base_lstm = lstm
-
-            min, max, mean = sess.run([tf.reduce_min(dis), tf.reduce_max(dis), tf.reduce_mean(dis)])
-            print('min: {}, max: {}, mean: {}'.format(min, max, mean))
+        writer = random.randint(0, len(genuine_data))
+        writer_genuine_sample = genuine_data[writer]
+        genuine_lstm_dis = []
+        base_sample = writer_genuine_sample[0]
+        base_lstm = sess.run(lstm_code, feed_dict={x: [base_sample]})
+        for index in xrange(5):
+            index = random.randint(1, len(writer_genuine_sample) - 1)
+            sample = writer_genuine_sample[index]
+            lstm = sess.run(lstm_code, feed_dict={x: [sample]})
+            genuine_lstm_dis.append(sess.run(tf.reduce_mean(tf.square(lstm - base_lstm))))
         print("time cost: {0}".format(time.time() - start_time))
+
+        for sample in genuine_lstm_dis:
+            plt.plot(sample, 'b', linewidth=1)
+        plt.show()
 
 
 if __name__ == '__main__':
