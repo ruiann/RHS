@@ -14,7 +14,7 @@ channel = 3
 log_dir = './log'
 model_dir = './model'
 sample_count = 2
-test_count = 30
+test_count = 3
 segment_length = 100
 
 rhs = RHS(lstm_size=800, class_num=133)

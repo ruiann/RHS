@@ -1,7 +1,6 @@
 *.pyc
 data/
 SVC2004/
-ATVS-SSig_DB/
 log/
 model/
 .idea
