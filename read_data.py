@@ -12,8 +12,8 @@ def get_writer_list():
     return filenames
 
 
-# data definition of BIT Handwriting
-def read_file(path):
+# real stroke only
+def read_real_file(path):
     try:
         file = open(path, 'r')
         lines = file.readlines()
@@ -27,7 +27,7 @@ def read_file(path):
             line = line.replace('\r', '')
             line = line.replace('\n', '')
             data = line.split()
-            # real stroke only
+
             if data[1] != 0:
                 if base_x:
                     s.append([int(data[4]) - base_x, int(data[5]) - base_y, int(data[0]) - base_t])
@@ -43,16 +43,46 @@ def read_file(path):
     return s
 
 
+# hybrid stroke
+def read_hybird_file(path):
+    try:
+        file = open(path, 'r')
+        lines = file.readlines()
+        for line_index in useless_line:
+            del lines[line_index]
+        s = []
+        base_x = None
+        base_y = None
+        base_p = None
+        for line in lines:
+            line = line.replace('\r', '')
+            line = line.replace('\n', '')
+            data = line.split()
+            if base_x:
+                s.append([int(data[4]) - base_x, int(data[5]) - base_y, 1 if int(data[1]) * base_p > 0 else 0])
+
+            base_x = int(data[4])
+            base_y = int(data[5])
+            base_p = int(data[1])
+    except Exception, e:
+        print repr(e)
+        return None
+
+    return s
+
+
 # sample for BIT Handwriting
-def get_samples(dir_list):
+def get_samples(dir_list, type):
     writers = get_writer_list()
     samples = []
     for w in xrange(len(writers)):
         signatures = []
-        no = str(w + 1)
         for s in xrange(len(dir_list)):
             path = '{}/{}/{}'.format(base_path, dir_list[s], writers[w])
-            signature = read_file(path)
+            if type == 'hybrid':
+                signature = read_hybird_file(path)
+            else:
+                signature = read_real_file(path)
             if signature:
                 signatures.append(signature)
         samples.append(signatures)
@@ -61,8 +91,8 @@ def get_samples(dir_list):
 
 
 # get rhs data
-def get_rhs_segments(dir_list, segment_per_sample=1000, segment_length=100):
-    samples, writers = get_samples(dir_list)
+def get_rhs_segments(dir_list, segment_per_sample=1000, segment_length=100, type='hybrid'):
+    samples, writers = get_samples(dir_list, type)
     rhs = []
     for w in xrange(len(writers)):
         writer_samples = samples[w]
@@ -78,13 +108,14 @@ def get_rhs_segments(dir_list, segment_per_sample=1000, segment_length=100):
 
 
 class Data:
-    def __init__(self, segment_per_sample=1000, segment_length=100):
+    def __init__(self, segment_per_sample=1000, segment_length=100, type='hybrid'):
         self.segment_per_sample = segment_per_sample
         self.segment_length = segment_length
         self.writers = get_writer_list()
+        self.type = type
 
     def init_data(self):
-        self.rhs_sample = get_rhs_segments(train_dir, self.segment_per_sample, self.segment_length)
+        self.rhs_sample = get_rhs_segments(train_dir, self.segment_per_sample, self.segment_length, self.type)
 
     def feed_dict(self, batch_size):
         segments = []
@@ -105,7 +136,7 @@ class Data:
         return len(self.rhs_sample)
 
     def init_test_data(self):
-        test_rhs_sample = get_rhs_segments(test_dir, self.segment_per_sample, self.segment_length)
+        test_rhs_sample = get_rhs_segments(test_dir, self.segment_per_sample, self.segment_length, self.type)
         result = [[] for i in xrange(self.class_num())]
         for sample in test_rhs_sample:
             label = sample['label']
