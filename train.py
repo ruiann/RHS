@@ -23,7 +23,7 @@ def train():
 
     x = tf.placeholder(tf.float32, shape=(batch_size, None, channel))
     labels = tf.placeholder(tf.int32, shape=(batch_size))
-    train_op = rhs.train(rate, x, batch_size, labels)
+    train_op = rhs.train(rate, x, labels)
 
     # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.7)
     # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
@@ -34,10 +34,10 @@ def train():
     run_metadata = tf.RunMetadata()
 
     with sess.as_default():
+        sess.run(tf.global_variables_initializer())
         if checkpoint:
             saver.restore(sess, checkpoint.model_checkpoint_path)
         summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
-        sess.run(tf.global_variables_initializer())
 
         print('Memory usage: {0}'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024))
 
