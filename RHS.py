@@ -7,20 +7,20 @@ from BidirectionalRNN import BidirectionalRNN
 
 class RHS:
 
-    def __init__(self, lstm_size=[800], layer=[10]):
-        self.bidirectional_rnn = BidirectionalRNN('BidirectionalRNN', lstm_size)
-        self.logistic_regression = LogisticRegression('LogisticRegression', lstm_size[-1], layer)
+    def __init__(self, rnn_size=[800], layer=[10]):
+        self.bidirectional_rnn = BidirectionalRNN('BidirectionalRNN', rnn_size)
+        self.logistic_regression = LogisticRegression('LogisticRegression', rnn_size[-1], layer)
 
     # do classification
     def run(self, data, batch_size):
-        lstm_code = self.lstm(data, batch_size)
-        return self.regression(lstm_code)
+        rnn_code = self.rnn(data, batch_size)
+        return self.regression(rnn_code)
 
-    def lstm(self, data, batch_size):
+    def rnn(self, data, batch_size):
         return self.bidirectional_rnn.run(data, batch_size)
 
-    def regression(self, lstm_code):
-        return self.logistic_regression.run(lstm_code)
+    def regression(self, rnn_code):
+        return self.logistic_regression.run(rnn_code)
 
     # compute loss
     def loss(self, logits, labels):
