@@ -15,7 +15,7 @@ test_count = 30
 model_dir = './model'
 
 data = Data(segment_per_sample, segment_length)
-rhs = RHS(lstm_size=800, class_num=data.class_num())
+rhs = RHS(layer=[data.class_num()])
 
 
 def test():
