@@ -25,7 +25,7 @@ def test():
     regression = rhs.regression(lstm_code)
     classification = tf.reduce_mean(tf.nn.softmax(regression), 0)
     index = tf.argmax(classification, dimension=0)
-    sample_code = tf.reduce_sum(lstm_code, 0)
+    sample_code = tf.reduce_mean(lstm_code, 0)
 
     sess = tf.Session()
 
